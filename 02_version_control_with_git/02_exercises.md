@@ -63,14 +63,14 @@ cd /tmp/new_repo # change working directory
 
 
 ```python
-
+git init
 ```
 
 **Exercise**: Check the status of the repository - there should be nothing to commit yet.
 
 
 ```python
-
+git status
 ```
 
 **Example**: Create a new file called `experiment_1.txt` with any content and add it to the staging area.
@@ -85,42 +85,51 @@ git add experiment_1.txt
 
 
 ```python
-
+echo "Data from experiment 2" > experiment_2.txt
+echo "Data from experiment 3" > experiment_3.txt
+git add experiment_2.txt experiment_3.txt
 ```
 
 **Exercise**: Commit the staged changes and add a message like `"Add data from experiments"`.
 
 
 ```python
-
+git commit -m "Add data from experiments"
 ```
 
 Make a change to `experiment_1.txt` and check the status - it should show you a modified file.
 
 
 ```python
-
+echo "Updated content" >> experiment_1.txt
+git status
 ```
 
 **Exercise**: Add and commit the change (**Hint**: in the terminal, you can use `commit -am` to add and commit in one go.). Check the status to confirm there are no untracked changes.
 
 
 ```python
-
+git commit -am "Update experiment_1.txt"
+git status
 ```
 
 **Exercise**: Make changes to `experiment_2.txt` and `experiment_3.txt` and save them in a single commit. Check the status whenever you need to.
 
 
 ```python
-
+echo "Updated content" >> experiment_2.txt
+echo "Updated content" >> experiment_3.txt
+git add .
+git commit -m "Update experiments 2 and 3"
 ```
 
 **Exercise**: Delete `experiment_3.txt`, check the status and commit the change.
 
 
 ```python
-
+rm experiment_3.txt
+git status
+git commit -am "Delete experiment_3.txt"
 ```
 
 ## Pushing a Local Repository to GitHub
@@ -153,7 +162,7 @@ In the following exercises you are going to create a new repository on GitHub, a
 
 
 ```python
-
+git remote add origin <repo-url>
 ```
 
 **Exercise**: Push the local repository to GitHub using `git push -u origin main` or `git push -u origin master` and authenticate yourself when you are prompted. Then, open the repository in the browser to verify the content was pushed.
@@ -173,28 +182,33 @@ In the following exercises you are going to create a new repository on GitHub, a
 
 
 ```python
-
+git push -u origin main
 ```
 
 **Exercise**: Add a new text file with some content and commit the changes to the repository. Then, `git push` the changes to the remote and check the GitHub repository in the browser to verify the file was transferred.
 
 
 ```python
-
+echo "Some content" > new_file.txt
+git add new_file.txt
+git commit -m "Add new_file.txt"
+git push
 ```
 
 **Exercise**: Add a new line to the file, commit the changes and `git push` to the remote again. Then, check the GitHub repository in the browser to verify the file was transferred.
 
 
 ```python
-
+echo "Another line" >> new_file.txt
+git commit -am "Add a line to new_file.txt"
+git push
 ```
 
 **Exercise**: Now edit one of the textfiles on GitHub in the browser and commit the changes there. Then, run `git pull` to update the local repository and verify the edits where copied.
 
 
 ```python
-
+git pull
 ```
 
 ## Inspecting the Commit History
@@ -223,28 +237,28 @@ In this section, you'll start by inspecting the commit history of your project. 
 
 
 ```python
-
+git log
 ```
 
 **Exercise**: Check your commit history, find the second most recent commit and copy its hash.
 
 
 ```python
-
+git log --oneline
 ```
 
 **Exercise**: Use the hash from the previous exercise to compare the commit to the working directory.
 
 
 ```python
-
+git diff <hash>
 ```
 
 **Exercise**: Compare the same commit to the working directory using `HEAD~1`.
 
 
 ```python
-
+git diff HEAD~1
 ```
 
 
@@ -252,14 +266,14 @@ In this section, you'll start by inspecting the commit history of your project. 
 
 
 ```python
-
+git diff HEAD~2
 ```
 
 **Exercise**: Compare two specific commits.
 
 
 ```python
-
+git diff HEAD~2 HEAD~1
 ```
 
 ## Reverting and Undoing Changes
@@ -290,56 +304,69 @@ Because most of these operations are not exposed by VS Code's graphical interfac
 
 
 ```python
-
+git log -1
+git checkout HEAD~1
+git log -1
 ```
 
 **Exercise**: Use `git checkout main` (or `git checkout master`) to move the working directory back to the most recent commit on your default branch and check the commit history.
 
 
 ```python
-
+git checkout main
+git log -1
 ```
 
 **Exercise**: Check the commit history, pick a commit from the past and `checkout` to that commit. Explore the files to see how the repository looked at that time. When you are done, checkout to the most recent commit on your default branch again.
 
 
 ```python
-
+git log --oneline
+git checkout HEAD~2
+git checkout main
 ```
 
 **Exercise**: Undo the latest commit using `git revert HEAD`. This may open the text editor VIM to edit your commit message. To exit VIM, press Esc, type `:wq` (w for write, q for quit) and hit Enter.
 
 
 ```python
-
+git revert HEAD
 ```
 
 **Exercise**: Check the commit history to view the entry made by `revert`. Then run `git revert HEAD` again to undo the undoing of the previous commit.
 
 
 ```python
-
+git log --oneline
+git revert HEAD
 ```
 
 **Exercise**: Check the commit history to view the entry made by `revert`. Then run `git revert HEAD` again to undo the undoing of the previous commit and check the history again.
 
 
 ```python
-
+git log --oneline
+git revert HEAD
+git log --oneline
 ```
 
 **Exercise**: Pick a commit from the past and use `git reset --soft` to reset the repository to that state. Then, check `git status` - you should see the modifications that happened after the reset point as staged changes. Commit the staged changes again.
 
 
 ```python
-
+git log --oneline
+git reset --soft HEAD~2
+git status
+git commit -m "Recommit after soft reset"
 ```
 
 **Exercise**: Pick a commit from the past and use `git reset --hard` to reset the repository to that state. Then, check `git status` - you should not see any changes because the modifications after the reset point have been dropped.
 
 
 ```python
-
+git log --oneline
+git reset --hard HEAD~1
+git status
 ```
 
 ## BONUS: Ignoring Files
@@ -369,42 +396,49 @@ In the following exercises you will create a `.gitignore` file, add files to ign
 
 
 ```python
-
+echo "experiment_4.txt" > .gitignore
+git add .gitignore
+git commit -m "Add .gitignore"
 ```
 
 **Exercise**: Create `experiment_4.txt` and check `git status`. You should not see any untracked changes because the file should be ignored.
 
 
 ```python
-
+echo "Experiment 4 data" > experiment_4.txt
+git status
 ```
 
 **Exercise**: Add `*.txt` to `.gitignore` to ignore all text files and commit.
 
 
 ```python
-
+echo "*.txt" >> .gitignore
+git commit -am "Ignore all .txt files"
 ```
 
 **Example**: Use `git rm --cached` to remove `experiment_1.txt` from Git's index but keep it in your working directory and commit.
 
 
 ```python
-
+git rm --cached experiment_1.txt
+git commit -m "Remove experiment_1.txt from tracking"
 ```
 
 **Exercise**: Use `git rm --cached` to remove `experiment_2.txt` from Git's index but keep it in your working directory and commit.
 
 
 ```python
-
+git rm --cached experiment_2.txt
+git commit -m "Remove experiment_2.txt from tracking"
 ```
 
 **Exercise**: Modify `experiment_2.txt` and check `git status` - it should not show any changes.
 
 
 ```python
-
+echo "Modified content" >> experiment_2.txt
+git status
 ```
 
 ## Bonus: Working with Branches
@@ -443,47 +477,63 @@ To exit Vim press Esc, type `:wq` (write + quit) and hit enter.
 
 
 ```python
-
+echo "# Notes" > notes.md
+git add notes.md
+git commit -m "Add notes.md"
 ```
 
 **Exercise**: Create a new branch called `feature1` and switch to that branch. Confirm you are on `feature1` by checking `git status` or the **Source Control** panel in VS Code.
 
 
 ```python
-
+git branch feature1
+git checkout feature1
+git status
 ```
 
 **Exercise**: Make **at least** two commits to `feature1`.
 
 
 ```python
-
+echo "Feature 1 update 1" >> notes.md
+git commit -am "Feature 1: first update"
+echo "Feature 1 update 2" >> notes.md
+git commit -am "Feature 1: second update"
 ```
 
 **Exercise**: Switch back to `main` (might also be called `master`) and merge `feature1`. Check the commit history to confirm your default branch contains the commits from `feature1`.
 
 
 ```python
-
+git checkout main
+git merge feature1
+git log --oneline
 ```
 
 **Exercise**: Delete the branch `feature1`.
 
 
 ```python
-
+git branch -d feature1
 ```
 
 **Exercise**: Switch to a new branch `feature2` and make **at least** two commits to that branch.
 
 
 ```python
-
+git checkout -b feature2
+echo "Feature 2 update 1" >> notes.md
+git commit -am "Feature 2: first update"
+echo "Feature 2 update 2" >> notes.md
+git commit -am "Feature 2: second update"
 ```
 
 **Exercise**: Switch back to `main` (or `master`) and merge `feature2` with `--squash`. Then, check the commit history - you should only see a single commit for the merge.
 
 
 ```python
-
+git checkout main
+git merge --squash feature2
+git commit -m "Merge feature2 (squashed)"
+git log --oneline
 ```

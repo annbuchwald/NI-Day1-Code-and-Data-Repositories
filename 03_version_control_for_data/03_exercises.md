@@ -53,56 +53,59 @@ The following exercises will introduce you to the DataLad command line interface
 
 
 ```python
-
+datalad clone https://hub.datalad.org/edu/penguins.git
 ```
 
 **Exercise**: Change the working directory to the `penguins` folder and list its contents
 
 
 ```python
-
+cd penguins
+ls
 ```
 
 **Exercise**: List the contents of the `adelie/` folder
 
 
 ```python
-
+ls adelie/
 ```
 
 **Exercise**: Try to print the content of `adelie/table_219.csv` using the `cat` command (or `type` on Windows). You should see an error because, by default, DataLad does not download the actual file content
 
 
 ```python
-
+cat adelie/table_219.csv
 ```
 
 **Exercise**: Use `datalad get` to download the content of `adelie/table_219.csv`, then print it again.
 
 
 ```python
-
+datalad get adelie/table_219.csv
+cat adelie/table_219.csv
 ```
 
 **Exercise**: Use `datalad drop` to remove the content of `adelie/table_219.csv` again.
 
 
 ```python
-
+datalad drop adelie/table_219.csv
 ```
 
 **Exercise**: Use `datalad get` to download the contents of the entire `adelie/` folder, then use `datalad drop` to remove the contents again.
 
 
 ```python
-
+datalad get adelie/
+datalad drop adelie/
 ```
 
 **Exercise**: Use `datalad get *` to download the contents of all files in this dataset.
 
 
 ```python
-
+datalad get *
 ```
 
 ## Modifying Content and Tracking Changes
@@ -137,28 +140,34 @@ In the following exercises, we are going to inspect the `git log` to view the hi
 
 
 ```python
-
+git log
 ```
 
 **Exercise**: Use `datalad unlock` to unlock the file `adelie/table_219.csv`, then check `datalad status`.
 
 
 ```python
-
+datalad unlock adelie/table_219.csv
+datalad status
 ```
 
 **Exercise**: Open the file in VSCode (`code adelie/table_219.csv`), delete some rows, save the file, then use `datalad save` to save the changes with a message (`-m`) and use `git log` to see your commit.
 
 
 ```python
-
+code adelie/table_219.csv
+datalad save -m "Edit adelie/table_219.csv: remove some rows"
+git log
 ```
 
 **Exercise**: Unlock `gentoo/table_220.csv` and run `datalad save`. Check `datalad status` and `git log`. The status should be clean and there should be no new entry in the commit history if the file wasn't modified.
 
 
 ```python
-
+datalad unlock gentoo/table_220.csv
+datalad save
+datalad status
+git log
 ```
 
 ## Creating Siblings on Online Repositories
@@ -203,21 +212,21 @@ Copy the token. Be careful: you won't be able to see the token again once you cl
 
 
 ```python
-
+datalad osf-credentials
 ```
 
 **Exercise**: Use `create-sibling-osf` to publish your dataset to OSF with a `--title` of your choice.
 
 
 ```python
-
+datalad create-sibling-osf --title "penguins-dataset"
 ```
 
 **Exercise**: Push `--to osf` and inspect your OSF repository in the browser. The OSF repository will not contain the data in a human-readable form. You can push to and pull from this repository, but you can't explore files in the browser (**Note**: only files that you have downloaded with `datalad get` will be pushed).
 
 
 ```python
-
+datalad push --to osf
 ```
 
 To have a repository that can be easily browsed and shared, we will next create a sibling on GitHub. GitHub can't store the actual file content, but that is not a problem - when we clone from GitHub, DataLad will automatically fetch the file content from another source that has it. To create a GitHub sibling, we need another access token. Log in to [GitHub](https://github.com/), click on your user icon in the top-right, and select "Settings".
@@ -240,7 +249,8 @@ Grant full access to repositories, create the token, and paste it when prompted.
 
 
 ```python
-
+datalad create-sibling-github penguins
+datalad push --to github
 ```
 
 **Exercise**: Use the `datalad siblings` command to list all siblings of the current dataset.
@@ -249,14 +259,17 @@ Grant full access to repositories, create the token, and paste it when prompted.
 
 
 ```python
-
+datalad update -s github --merge
 ```
 
 **Bonus**: Go to a different folder on your computer, use `datalad clone` to clone the dataset from GitHub, and use `datalad get *` to download all of the file content.
 
 
 ```python
-
+cd /tmp
+datalad clone https://github.com/annbuchwald/penguins
+cd penguins
+datalad get *
 ```
 
 ## Creating Local Backups
@@ -298,7 +311,7 @@ git init --bare /tmp/penguins-backup
 
 
 ```python
-
+git init --bare /tmp/penguins-backup-2
 ```
 
 **Example**: Add `/tmp/penguins-backup` as a sibling to the current penguins dataset with the name `backup`.
@@ -315,21 +328,22 @@ datalad siblings add --name backup --url /tmp/penguins-backup
 
 
 ```python
-
+datalad siblings add --name backup-2 --url /tmp/penguins-backup-2
 ```
 
 **Exercise**: List all siblings of the current penguins dataset.
 
 
 ```python
-
+datalad siblings
 ```
 
 **Exercise**: Push `--to` one of the backup siblings **TWICE**. You need to push twice because on the first push, DataLad initializes the data storage, and the second push transfers the actual file content.
 
 
 ```python
-
+datalad push --to backup-2
+datalad push --to backup-2
 ```
 
 ## Bonus: Telling DataLad what to Track
@@ -393,7 +407,7 @@ git annex whereis gentoo/table_220.csv
 
 
 ```python
-
+git annex whereis examples/gentoo.jpg
 ```
 
 **Exercise**: Open `.gitattributes` in VSCode and add the line
@@ -418,10 +432,10 @@ datalad save -m "unannex gentoo.jpg"
     unannex examples/gentoo.jpg ok
     (recording state in git...)
     Total: 0.00 datasets [00:00, ? datasets/s]
-    Total:   0%|                                   | 0.00/4.81M [00:00<?, ? Bytes/s][A
-    [1;1madd[0m([1;32mok[0m): examples/gentoo.jpg ([1;35mfile[0m)             [A
-    [1;1madd[0m([1;32mok[0m): .gitattributes ([1;35mfile[0m)                  
-    [1;1msave[0m([1;32mok[0m): . ([1;35mdataset[0m)                           
+    Total:   0%|                                   | 0.00/4.81M [00:00<?, ? Bytes/s][A
+    [1;1madd[0m([1;32mok[0m): examples/gentoo.jpg ([1;35mfile[0m)             [A
+    [1;1madd[0m([1;32mok[0m): .gitattributes ([1;35mfile[0m)                  
+    [1;1msave[0m([1;32mok[0m): . ([1;35mdataset[0m)                           
     action summary:                                                                 
       add (ok: 2)
       save (ok: 1)
@@ -431,14 +445,15 @@ datalad save -m "unannex gentoo.jpg"
 
 
 ```python
-
+git annex unannex examples/*.jpg
+datalad save -m "unannex all jpg files"
 ```
 
 **Exercise**: Get the location of the annexed file content of `examples/gentoo.jpg` again. It should not return anything because the file is no longer handled by git-annex.
 
 
 ```python
-
+git annex whereis examples/gentoo.jpg
 ```
 
 **Exercise**: A configuration that is often useful is to only annex binary files (e.g. data) and leave text files, such as code, tracked directly by Git. Open `.gitattributes` in VSCode and change the last line to
@@ -456,7 +471,8 @@ code .gitattributes
 
 
 ```python
-
+git annex unannex **/*.csv
+datalad save -m "unannex all csv files"
 ```
 
 **Exercise**: Often, large text files, such as large CSV tables, are better left to git-annex. Open `.gitattributes` in VSCode and change the last line to
@@ -472,5 +488,7 @@ code .gitattributes
 
 
 ```python
-
+git annex unannex **/*.csv
+git annex add **/*.csv
+datalad save -m "reannex large csv files with updated config"
 ```
